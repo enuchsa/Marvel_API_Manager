@@ -4,6 +4,7 @@ from heroes.group.models import Group
 
 
 class Hero(models.Model):
+    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=75, null=False, blank=False)
     description = models.CharField(max_length=300, null=False, blank=False)
     image = models.CharField(max_length=300, null=False, blank=False)
