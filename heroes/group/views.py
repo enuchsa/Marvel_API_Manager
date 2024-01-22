@@ -2,21 +2,56 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db import connection
+
 
 from heroes.group.models import Group
+from heroes.hero.models import Hero
 from heroes.group.serializers import GroupSerializer
+from heroes.hero.serializers import HeroSerializer
+from heroes.api import Marvel_api
 
 
 class GroupList(APIView):
+    
+
+    # def execute_raw_query(self, hero: Hero, group_id: int):    
+    #     breakpoint()
+    #     with connection.cursor() as cursor:
+    #         cursor.execute(f"""
+    #             INSERT INTO heroes_hero (name, description, image, group_id, id) VALUES ({hero.name, hero.description, hero.image, group_id, hero.id}); 
+    #         """)
+    #         results = cursor.fetchall()
+    #         return results
+    
     def get(self, request, format=None):
         groups = Group.objects.all()
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
     
     def post(self, request, format=None):
-        serializer = GroupSerializer(data=request.data)
+        data = request.data
+        pks = data['heroes']
+        data['heroes'] = []
+        print(pks)
+        group = Group(name=data['name'], description=data['description'])
+        group.save()
+        
+        hero: Hero
+        for pk in pks:
+            hero = Marvel_api().get_one(pk)[0]
+            hero.group = group
+            hero.save()   
+            
+            # response = self.execute_raw_query(hero[0], group.id)
+        serializer = GroupSerializer(data=data)
+        
+        
         if serializer.is_valid():
-            serializer.save()
+            # serializer.save()
+            group = Group.objects.get(pk=group.pk)
+            serializer = GroupSerializer(group)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
@@ -33,6 +68,14 @@ class GroupDetail(APIView):
         return Response(serializer.data)
 
     def put(self, request, pk, format=None):
+        group = self.get_object(pk)
+        serializer = GroupSerializer(group, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk, format=None):
         group = self.get_object(pk)
         serializer = GroupSerializer(group, data=request.data)
         if serializer.is_valid():
