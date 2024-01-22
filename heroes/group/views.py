@@ -76,10 +76,25 @@ class GroupDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def patch(self, request, pk, format=None):
-        group = self.get_object(pk)
-        serializer = GroupSerializer(group, data=request.data)
+        data = request.data
+        print(data)
+        group = Group.objects.get(pk=pk)
+        pk_g = group.pk
+        
+        for pk in data['heroes']:
+            hero = Marvel_api().get_one(pk)[0]
+            hero.group = group
+            hero.save()
+            
+        lis = {}
+        lis['name'] = group.name
+        lis['description'] = group.description
+        lis['heroes'] = []
+        serializer = GroupSerializer(data=lis)
         if serializer.is_valid():
-            serializer.save()
+            group = Group.objects.get(pk=pk_g)
+            serializer = GroupSerializer(group)
+            
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
