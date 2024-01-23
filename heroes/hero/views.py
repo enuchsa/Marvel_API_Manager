@@ -19,6 +19,8 @@ class HeroList(APIView):
     
     def get(self, request, *args, **kwargs):
         name = kwargs.get('name')
+        status = kwargs.get('status')
+        print(request)
         self.heroes = Marvel_api().get_all(name=name)
         
         serializer = HeroSerializer(self.heroes, many=True)
