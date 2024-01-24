@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from heroes.hero.models import Hero
 from heroes.hero.serializers import HeroSerializer
 from heroes.api import Marvel_api
-
 class HeroList(APIView):
     heroes = []
 

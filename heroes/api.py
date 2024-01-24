@@ -37,14 +37,16 @@ class Marvel_api():
 
     def get_all(self, params: dict):
         offset = params.get("offset", 0)
+        limit = params.get("limit", 100)
         
         offset = int(offset)
+        limit = int(limit)
         
-        name = params.get("name")
+        name = params.get("search")
         
         self.heroes = []
         while True:
-            response = self.build_url(limit=100, offset=offset, name=name)
+            response = self.build_url(limit=limit, offset=offset, name=name)
             
             self.heroes.extend(response.json()['data']['results'])
             

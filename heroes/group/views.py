@@ -2,17 +2,18 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db import connection
+from rest_framework.permissions import IsAuthenticated
+
 
 
 from heroes.group.models import Group
 from heroes.hero.models import Hero
 from heroes.group.serializers import GroupSerializer
-from heroes.hero.serializers import HeroSerializer
 from heroes.api import Marvel_api
 
 
 class GroupList(APIView):
+    permission_classes = [IsAuthenticated]
     
 
     # def execute_raw_query(self, hero: Hero, group_id: int):    
@@ -56,6 +57,8 @@ class GroupList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class GroupDetail(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get_object(self, pk):
         try:
             return Group.objects.get(pk=pk)
@@ -77,7 +80,6 @@ class GroupDetail(APIView):
     
     def patch(self, request, pk, format=None):
         data = request.data
-        print(data)
         group = Group.objects.get(pk=pk)
         pk_g = group.pk
         
@@ -86,11 +88,17 @@ class GroupDetail(APIView):
             hero.group = group
             hero.save()
             
-        lis = {}
-        lis['name'] = group.name
-        lis['description'] = group.description
-        lis['heroes'] = []
-        serializer = GroupSerializer(data=lis)
+            hero_validation = [hero for hero in Hero.objects.filter(group_id=pk_g) if hero.pk != pk]
+        
+        for hero in hero_validation:
+            hero.group = None
+            hero.save()
+            
+        dict_group = {}
+        dict_group['name'] = group.name
+        dict_group['description'] = group.description
+        dict_group['heroes'] = []
+        serializer = GroupSerializer(data=dict_group)
         if serializer.is_valid():
             group = Group.objects.get(pk=pk_g)
             serializer = GroupSerializer(group)
