@@ -10,8 +10,8 @@ class Marvel_api():
     def build_url(self, *args, **kwargs):
         limit = kwargs.get('limit', 100)
         offset = kwargs.get('offset', 0)
-        name = kwargs.get('name', None)
-        pk = kwargs.get('pk', None)
+        name = kwargs.get('name')
+        pk = kwargs.get('pk')
         new_url = self.URL
         
         params = {
@@ -35,9 +35,13 @@ class Marvel_api():
         
         return response
 
-    def get_all(self, *args, **kwargs):
-        name = kwargs.get('name', None)
-        offset = 0
+    def get_all(self, params: dict):
+        offset = params.get("offset", 0)
+        
+        offset = int(offset)
+        
+        name = params.get("name")
+        
         self.heroes = []
         while True:
             response = self.build_url(limit=100, offset=offset, name=name)
