@@ -3,7 +3,7 @@ Bem vindo a minha tentativa de reproduzir um API
 O intuíto desse projeto era criar uma API que consumisse uma API externa que fornece dados de heróis
 Abaixo deixarei uma descrição de como baixar e rodar a API
 
-* Passo 1 - Baixe ou clone o projeto, crie ou entre no seu ambiente virtual (estou usando o venv) abra o terminal e rode o comando `py install r requirements.txt` para instalar os módulos necessários
+* Passo 1 - Baixe ou clone o projeto, crie ou entre no seu ambiente virtual (estou usando o venv) abra o terminal e rode o comando `pip install -r requirements.txt` para instalar os módulos necessários
 * Passo 2 - Rode o comando `py manage.py migrate` para que os models sejam criados no banco (estou usando o sqlite) mas caso você use o postgres ou outro banco será necessário ir no arquivo "settings.py" na pasta manager_heroes e ir em "DATABASES" lá será possível fazer a configuração de conexão de acordo com seu banco.
 * Passo 3 - Rode o comando `py manage.py runserver` para iniciar a API
 
