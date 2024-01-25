@@ -15,3 +15,4 @@ class Hero(models.Model):
     
     class Meta:
         ordering = ['name']
+        

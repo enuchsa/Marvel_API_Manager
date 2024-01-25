@@ -1,4 +1,3 @@
-from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from heroes.hero.models import Hero
@@ -25,7 +24,6 @@ class HeroList(APIView):
             herois_final = [hero for hero in self.heroes if hero.id not in heroes_in_group]
         else:
             herois_final = self.heroes    
-        
         
         serializer = HeroSerializer(herois_final, many=True)
         return Response(serializer.data)
